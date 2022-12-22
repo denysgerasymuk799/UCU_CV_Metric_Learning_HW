@@ -40,7 +40,7 @@ def get_data_transforms():
     }
 
 
-def get_files_metadata_dfs(root_data_dir):
+def get_files_metadata_dfs(root_data_dir, val_fraction, seed):
     train_val_files_metadata_df = pd.read_csv(f"{root_data_dir}/Ebay_train.txt", sep=" ")
     train_val_files_metadata_df.set_index('image_id')
     test_files_metadata_df = pd.read_csv(f"{root_data_dir}/Ebay_test.txt", sep=" ")
@@ -48,8 +48,8 @@ def get_files_metadata_dfs(root_data_dir):
 
     train_files_metadata_df, val_files_metadata_df = train_test_split(
         train_val_files_metadata_df,
-        test_size=VAL_FRACTION,
-        random_state=SEED,
+        test_size=val_fraction,
+        random_state=seed,
         stratify=train_val_files_metadata_df[['class_id']]
     )
     # train_files_metadata_df = train_files_metadata_df.reset_index(drop=True)
