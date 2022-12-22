@@ -38,7 +38,6 @@ def show_retrieval(model, annoy_index, train_dataset, test_dataset, k_closest):
     for row in range(rows):
         img_idx = random.randint(1, length_test_dataset - 1)
         img, true_class_id, true_superclass_id = test_dataset[img_idx]
-        # neightbours = annoy_index.get_nns_by_vector(feature_v, 5)[1:]
         embedding = get_embedding(model, img)
         neighbours = annoy_index.get_nns_by_vector(embedding, k_closest)  # get top k closest
 

@@ -3,6 +3,8 @@ import copy
 import torch
 from tqdm import tqdm
 
+from src.configs import DEVICE
+
 
 def complex_criterion(criterion_func, outputs, labels):
     loss = 0

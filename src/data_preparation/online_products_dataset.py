@@ -3,7 +3,7 @@ from torch.utils.data import DataLoader, Dataset
 
 
 class OnlineProductsDataset(Dataset):
-    def __init__(self, files_metadata_df, transform=None):
+    def __init__(self, files_metadata_df, root_data_dir, transform=None):
         self.files_metadata_df = files_metadata_df
         self.transform = transform
 
@@ -14,7 +14,7 @@ class OnlineProductsDataset(Dataset):
         _, class_id, superclass_id, img_path = self.files_metadata_df.iloc[idx]
 
         # Read an image with OpenCV
-        image = cv2.imread(f"{ROOT_DATA_DIR}/{img_path}")
+        image = cv2.imread(f"{root_data_dir}/{img_path}")
 
         # By default OpenCV uses BGR color space for color images,
         # so we need to convert the image to RGB color space.

@@ -3,6 +3,7 @@ import torch.optim as optim
 import torchvision.models as models
 from torch.optim import lr_scheduler
 
+from src.configs import *
 from src.models.model_types import ModelTypes
 from src.models.multilabel_classifier import MultilabelClassifier
 

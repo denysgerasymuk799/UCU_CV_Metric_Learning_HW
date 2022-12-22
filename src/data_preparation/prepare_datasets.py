@@ -66,12 +66,12 @@ def get_files_metadata_dfs(root_data_dir, val_fraction, seed):
     }
 
 
-def get_datasets(files_metadata_dfs):
+def get_datasets(files_metadata_dfs, root_data_dir):
     data_transforms = get_data_transforms()
 
-    train_dataset = OnlineProductsDataset(files_metadata_dfs['train'], data_transforms['train'])
-    val_dataset = OnlineProductsDataset(files_metadata_dfs['val'], data_transforms['val'])
-    test_dataset = OnlineProductsDataset(files_metadata_dfs['test'], data_transforms['val'])
+    train_dataset = OnlineProductsDataset(files_metadata_dfs['train'], root_data_dir, data_transforms['train'])
+    val_dataset = OnlineProductsDataset(files_metadata_dfs['val'], root_data_dir, data_transforms['val'])
+    test_dataset = OnlineProductsDataset(files_metadata_dfs['test'], root_data_dir, data_transforms['val'])
 
     return {
         'train': train_dataset,

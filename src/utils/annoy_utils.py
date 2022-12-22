@@ -3,6 +3,8 @@ import torch
 from tqdm import tqdm
 from annoy import AnnoyIndex
 
+from src.configs import DEVICE
+
 
 def get_embedding(model, img):
     """
@@ -31,7 +33,7 @@ def get_embedding(model, img):
     return embedding
 
 
-def build_index(model, train_dataset, model_output_size, model_name, num_trees):
+def build_index(model, train_dataset, model_output_size, model_name, num_trees, data_dir):
     num_skipped = 0
     num_saved = 0
     t = AnnoyIndex(model_output_size, 'angular')
@@ -49,13 +51,13 @@ def build_index(model, train_dataset, model_output_size, model_name, num_trees):
     print(f'Number of successfully saved images: {num_saved}')
 
     t.build(num_trees)
-    t.save(f'{GDRIVE_DATA_DIR}/{model_name}_train_{len(train_dataset)}_index.ann')
+    t.save(f'{data_dir}/{model_name}_train_{len(train_dataset)}_index.ann')
 
     return t
 
 
-def load_index(model_output_size, model_name, train_ds):
+def load_index(model_output_size, model_name, train_ds, data_dir):
     # Super fast, will just mmap the file
     index = AnnoyIndex(model_output_size, 'angular')
-    index.load(f'{GDRIVE_DATA_DIR}/{model_name}_train_{len(train_ds)}_index.ann')
+    index.load(f'{data_dir}/{model_name}_train_{len(train_ds)}_index.ann')
     return index
