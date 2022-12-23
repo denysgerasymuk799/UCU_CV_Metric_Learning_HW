@@ -14,7 +14,7 @@ def complex_criterion(criterion_func, outputs, labels):
 
 
 def fine_tune_model(model, data_loaders, dataset_sizes,
-                    criterion, optimizer, scheduler, num_epochs):
+                    criterion, model_optimizer, scheduler, num_epochs, loss_optimizer=None):
     """
     Reuse code from PyTorch documentation:
      https://pytorch.org/tutorials/beginner/transfer_learning_tutorial.html
@@ -51,7 +51,9 @@ def fine_tune_model(model, data_loaders, dataset_sizes,
                 true_superclass_ids -= 1
 
                 # zero the parameter gradients
-                optimizer.zero_grad()
+                model_optimizer.zero_grad()
+                if loss_optimizer is not None:
+                    loss_optimizer.zero_grad()
 
                 # forward
                 # track history if only in train
@@ -67,7 +69,9 @@ def fine_tune_model(model, data_loaders, dataset_sizes,
                     # backward + optimize only if in training phase
                     if phase == 'train':
                         loss.backward()
-                        optimizer.step()
+                        model_optimizer.step()
+                        if loss_optimizer is not None:
+                            loss_optimizer.step()
 
                 # statistics
                 running_loss += loss.item() * inputs.size(0)
@@ -81,9 +85,7 @@ def fine_tune_model(model, data_loaders, dataset_sizes,
             epoch_acc_classes = running_correct_classes.double() / dataset_sizes[phase]
             epoch_acc_superclasses = running_correct_superclasses.double() / dataset_sizes[phase]
 
-            print(
-                f'\n{phase} Loss: {epoch_loss:.4f} Acc [Classes]: {epoch_acc_classes:.4f} Acc [Superclasses]: {epoch_acc_superclasses:.4f}')
-            # print(f'{phase} Loss: {epoch_loss:.4f}')
+            print(f'\n{phase} Loss: {epoch_loss:.4f} Acc [Classes]: {epoch_acc_classes:.4f} Acc [Superclasses]: {epoch_acc_superclasses:.4f}')
 
             # deep copy the model
             if phase == 'val' and (epoch_acc_classes + epoch_acc_superclasses) > best_sum_acc:
@@ -100,4 +102,4 @@ def fine_tune_model(model, data_loaders, dataset_sizes,
 
     # load best model weights
     model.load_state_dict(best_model_wts)
-    return model, optimizer
+    return model, model_optimizer
