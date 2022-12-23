@@ -43,6 +43,10 @@ class ResNetInitializer:
             model_name = 'resnet18_siamese_with_custom_contrastive_loss'
             criterion = CustomContrastiveLoss()
             model = MultilabelClassifier(backbone_model, num_ftrs, embedding_size, embedding_size)
+        elif model_type == ModelTypes.TUNED_SIAMESE_WITH_CONTRASTIVE:
+            model_name = 'resnet18_siamese_with_contrastive_loss'
+            criterion = losses.ContrastiveLoss().to(DEVICE)
+            model = MultilabelClassifier(backbone_model, num_ftrs, embedding_size, embedding_size)
 
         self.model = model.to(DEVICE)
         self.criterion = criterion
