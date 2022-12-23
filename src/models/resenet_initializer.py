@@ -8,6 +8,7 @@ from pytorch_metric_learning import losses
 from src.configs import DEVICE
 from src.models.model_types import ModelTypes
 from src.models.multilabel_classifier import MultilabelClassifier
+from src.losses.custom_constractive_loss import CustomContrastiveLoss
 
 
 class ResNetInitializer:
@@ -38,6 +39,10 @@ class ResNetInitializer:
             # Loss for superclasses
             self.superclass_criterion = losses.ArcFaceLoss(num_superclasses, embedding_size).to(DEVICE)
             self.superclass_loss_optimizer = torch.optim.SGD(self.superclass_criterion.parameters(), lr=0.01)
+        elif model_type == ModelTypes.TUNED_SIAMESE_WITH_CUSTOM_CONTRASTIVE:
+            model_name = 'resnet18_siamese_with_custom_contrastive_loss'
+            criterion = CustomContrastiveLoss()
+            model = MultilabelClassifier(backbone_model, num_ftrs, embedding_size, embedding_size)
 
         self.model = model.to(DEVICE)
         self.criterion = criterion

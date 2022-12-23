@@ -5,7 +5,7 @@ import albumentations as albu
 from sklearn.model_selection import train_test_split
 from albumentations.pytorch import ToTensorV2 as ToTensor
 
-from src.data_preparation.online_products_dataset import OnlineProductsDataset
+from src.data_preparation.online_products_datasets import OnlineProductsDataset, OnlineProductsSiameseDataset
 
 
 def get_data_transforms():
@@ -78,6 +78,16 @@ def get_datasets(files_metadata_dfs, root_data_dir):
         'val': val_dataset,
         'test': test_dataset,
     }
+
+
+def create_siamese_datasets(datasets):
+    siamese_datasets = dict()
+    for phase in datasets.keys():
+        phase_dataset = datasets[phase]
+        siamese_datasets[phase] = OnlineProductsSiameseDataset(phase_dataset.files_metadata_df,
+                                                               phase_dataset.root_data_dir, phase_dataset.transform)
+
+    return siamese_datasets
 
 
 def get_data_loaders(datasets, batch_size, num_workers):

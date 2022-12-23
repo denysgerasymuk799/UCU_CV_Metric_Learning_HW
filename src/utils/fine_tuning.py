@@ -188,3 +188,83 @@ def fine_tune_arcface(model, data_loaders, dataset_sizes,
     # load best model weights
     model.load_state_dict(best_model_wts)
     return model, model_optimizer, class_loss_optimizer, superclass_loss_optimizer
+
+
+def fine_tune_siamese(model, data_loaders, dataset_sizes, custom_criterion,
+                      model_optimizer, scheduler, num_epochs):
+    """
+    Reuse code from PyTorch documentation:
+     https://pytorch.org/tutorials/beginner/transfer_learning_tutorial.html
+    """
+    since = time.time()
+    best_model_wts = copy.deepcopy(model.state_dict())
+    best_class_loss, best_superclass_loss = 0.0, 0.0
+    best_sum_losses = 1000_000
+
+    for epoch in range(num_epochs):
+        print(f'Epoch {epoch}/{num_epochs - 1}')
+        print('-' * 10)
+
+        # Each epoch has a training and validation phase
+        for phase in ['train', 'val']:
+            if phase == 'train':
+                model.train()  # Set model to training mode
+            else:
+                model.eval()  # Set model to evaluate mode
+
+            running_class_loss = 0.0
+            running_superclass_loss = 0.0
+
+            # Iterate over data.
+            for imgs1, imgs2, same_superclasses_labels, same_classes_labels in tqdm(data_loaders[phase]):
+                inputs1 = imgs1.to(DEVICE)
+                inputs2 = imgs2.to(DEVICE)
+                same_superclasses_labels = same_superclasses_labels.to(DEVICE)
+                same_classes_labels = same_classes_labels.to(DEVICE)
+
+                # zero the parameter gradients
+                model_optimizer.zero_grad()
+
+                # forward
+                # track history if only in train
+                with torch.set_grad_enabled(phase == 'train'):
+                    outputs1 = model(inputs1)
+                    outputs2 = model(inputs2)
+
+                    class_loss = custom_criterion(outputs1['class_id'], outputs1['class_id'], same_classes_labels)
+                    superclass_loss = custom_criterion(outputs1['superclass_id'], outputs1['superclass_id'],
+                                                       same_superclasses_labels)
+
+                    # backward + optimize only if in training phase
+                    if phase == 'train':
+                        class_loss.backward(retain_graph=True)
+                        superclass_loss.backward()
+                        model_optimizer.step()
+
+                # statistics
+                running_class_loss += class_loss.item() * inputs1.size(0)
+                running_superclass_loss += superclass_loss.item() * inputs1.size(0)
+
+            if phase == 'train':
+                scheduler.step()
+
+            epoch_class_loss = running_class_loss / dataset_sizes[phase]
+            epoch_superclass_loss = running_superclass_loss / dataset_sizes[phase]
+            print(f'\n[{phase}] Class Loss: {epoch_class_loss:.4f} Superclass Loss: {epoch_superclass_loss:.4f}')
+
+            # deep copy the model
+            if phase == 'val' and (epoch_class_loss + epoch_superclass_loss) < best_sum_losses:
+                best_class_loss = epoch_class_loss
+                best_superclass_loss = epoch_superclass_loss
+                best_sum_losses = (best_class_loss + best_superclass_loss)
+                best_model_wts = copy.deepcopy(model.state_dict())
+
+        print()
+
+    time_elapsed = time.time() - since
+    print(f'Training complete in {time_elapsed // 60:.0f}m {time_elapsed % 60:.0f}s')
+    print(f'Best val Loss [Classes]: {best_class_loss:4f}\nBests val Loss [Superclasses]: {best_superclass_loss:4f}')
+
+    # load best model weights
+    model.load_state_dict(best_model_wts)
+    return model, model_optimizer
