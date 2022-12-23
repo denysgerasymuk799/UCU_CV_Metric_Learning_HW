@@ -50,8 +50,7 @@ class ResNetInitializer:
             model = MultilabelClassifier(backbone_model, num_ftrs, embedding_size, embedding_size)
         elif model_type == ModelTypes.TUNED_WITH_TRIPLET:
             model_name = 'resnet18_with_triplet_loss'
-            # From examples in pytorch-metric-learning library:
-            #  https://github.com/KevinMusgrave/pytorch-metric-learning/tree/master/examples
+            # Use primitives from pytorch-metric-learning library
             distance = distances.CosineSimilarity()
             reducer = reducers.ThresholdReducer(low=0)
             criterion = losses.TripletMarginLoss(margin=0.5, distance=distance, reducer=reducer).to(DEVICE)
