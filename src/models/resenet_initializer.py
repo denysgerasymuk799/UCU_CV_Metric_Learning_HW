@@ -2,8 +2,9 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import torchvision.models as models
+
 from torch.optim import lr_scheduler
-from pytorch_metric_learning import losses
+from pytorch_metric_learning import distances, losses, miners, reducers, testers
 
 from src.configs import DEVICE
 from src.models.model_types import ModelTypes
@@ -46,6 +47,17 @@ class ResNetInitializer:
         elif model_type == ModelTypes.TUNED_SIAMESE_WITH_CONTRASTIVE:
             model_name = 'resnet18_siamese_with_contrastive_loss'
             criterion = losses.ContrastiveLoss().to(DEVICE)
+            model = MultilabelClassifier(backbone_model, num_ftrs, embedding_size, embedding_size)
+        elif model_type == ModelTypes.TUNED_WITH_TRIPLET:
+            model_name = 'resnet18_with_triplet_loss'
+            # From examples in pytorch-metric-learning library:
+            #  https://github.com/KevinMusgrave/pytorch-metric-learning/tree/master/examples
+            distance = distances.CosineSimilarity()
+            reducer = reducers.ThresholdReducer(low=0)
+            criterion = losses.TripletMarginLoss(margin=0.5, distance=distance, reducer=reducer).to(DEVICE)
+            self.mining_func = miners.TripletMarginMiner(
+                margin=0.5, distance=distance, type_of_triplets="semihard"
+            )
             model = MultilabelClassifier(backbone_model, num_ftrs, embedding_size, embedding_size)
 
         self.model = model.to(DEVICE)

@@ -42,8 +42,8 @@ def evaluate(model, model_name, models_metrics_df, train_dataset, val_dataset, a
             superclass_actual_lst.append([true_superclass_id])
             superclass_predicted_lst.append(pred_superclass_ids)
 
-    precision = 4
     # Compute Accuracy
+    precision = 4
     class_id_accuracy = accuracy_score(np.array(class_true_lst), np.array(class_preds_lst))
     superclass_id_accuracy = accuracy_score(np.array(superclass_true_lst), np.array(superclass_preds_lst))
     class_id_accuracy = np.round(class_id_accuracy, precision)
