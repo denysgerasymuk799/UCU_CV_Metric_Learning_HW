@@ -92,7 +92,7 @@ def create_siamese_datasets(datasets):
 
 def get_data_loaders(datasets, batch_size, num_workers):
     data_loaders = dict()
-    for phase in ['train', 'val', 'test']:
+    for phase in datasets.keys():
         shuffle = True if phase == 'train' else False
         data_loaders[phase] = torch.utils.data.DataLoader(
             datasets[phase],
