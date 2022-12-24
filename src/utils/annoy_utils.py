@@ -37,9 +37,8 @@ def build_index(model, train_dataset, model_output_size, model_name, num_trees, 
     num_skipped = 0
     num_saved = 0
     t = AnnoyIndex(model_output_size, 'angular')
-    # for idx, (img, class_id, superclass_id) in enumerate(tqdm(train_dataset)):
     for idx, data in enumerate(tqdm(train_dataset)):
-        img, class_id, superclass_id = data
+        img, *_ = data
         if img is None:
             num_skipped += 1
             continue
