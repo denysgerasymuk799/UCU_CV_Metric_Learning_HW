@@ -61,7 +61,6 @@ def fine_tune_model(model, data_loaders, dataset_sizes, criterion, model_optimiz
                     labels = {'superclass_id': true_superclass_ids,
                               'class_id': true_class_ids}
                     loss = complex_criterion(criterion, outputs, labels)
-                    # loss = criterion(outputs, true_superclass_ids)
 
                     # backward + optimize only if in training phase
                     if phase == 'train':
@@ -231,8 +230,8 @@ def fine_tune_siamese(model, data_loaders, dataset_sizes, custom_criterion,
                     outputs1 = model(inputs1)
                     outputs2 = model(inputs2)
 
-                    class_loss = custom_criterion(outputs1['class_id'], outputs1['class_id'], same_classes_labels)
-                    superclass_loss = custom_criterion(outputs1['superclass_id'], outputs1['superclass_id'],
+                    class_loss = custom_criterion(outputs1['class_id'], outputs2['class_id'], same_classes_labels)
+                    superclass_loss = custom_criterion(outputs1['superclass_id'], outputs2['superclass_id'],
                                                        same_superclasses_labels)
 
                     # backward + optimize only if in training phase
