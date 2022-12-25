@@ -15,7 +15,7 @@ def complex_criterion(criterion_func, outputs, labels):
 
 def fine_tune_model(model, data_loaders, dataset_sizes, criterion, model_optimizer, scheduler, num_epochs):
     """
-    Reuse code from PyTorch documentation:
+    Fine-tune NN. The code is based on a tutorial from the PyTorch documentation:
      https://pytorch.org/tutorials/beginner/transfer_learning_tutorial.html
     """
     since = time.time()
@@ -104,7 +104,7 @@ def fine_tune_arcface(model, data_loaders, dataset_sizes,
                       superclass_criterion, superclass_loss_optimizer,
                       model_optimizer, scheduler, num_epochs):
     """
-    Reuse code from PyTorch documentation:
+    Fine-tune NN with Arcface Loss. The code is based on a tutorial from the PyTorch documentation:
      https://pytorch.org/tutorials/beginner/transfer_learning_tutorial.html
     """
     since = time.time()
@@ -150,8 +150,6 @@ def fine_tune_arcface(model, data_loaders, dataset_sizes,
                     class_loss = class_criterion(outputs['class_id'], labels['class_id'].to(DEVICE))
                     superclass_loss = superclass_criterion(outputs['superclass_id'], labels['superclass_id'].to(DEVICE))
 
-                    # loss = criterion(outputs, true_superclass_ids)
-
                     # backward + optimize only if in training phase
                     if phase == 'train':
                         class_loss.backward(retain_graph=True)
@@ -192,7 +190,8 @@ def fine_tune_arcface(model, data_loaders, dataset_sizes,
 def fine_tune_siamese(model, data_loaders, dataset_sizes, custom_criterion,
                       model_optimizer, scheduler, num_epochs):
     """
-    Reuse code from PyTorch documentation:
+    Fine-tune NN with Siamese approach and Constractive Loss.
+     The code is based on a tutorial from the PyTorch documentation:
      https://pytorch.org/tutorials/beginner/transfer_learning_tutorial.html
     """
     since = time.time()
@@ -280,7 +279,7 @@ def complex_triplet_criterion(criterion_func, outputs, labels, mining_func):
 def fine_tune_triplet(model, data_loaders, dataset_sizes, criterion, model_optimizer, scheduler,
                       mining_func, num_epochs):
     """
-    Reuse code from PyTorch documentation:
+    Fine-tune NN with TripletMarginLoss. The code is based on a tutorial from the PyTorch documentation:
      https://pytorch.org/tutorials/beginner/transfer_learning_tutorial.html
     """
     since = time.time()

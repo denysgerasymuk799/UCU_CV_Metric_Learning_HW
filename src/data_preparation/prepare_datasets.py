@@ -14,7 +14,6 @@ def get_data_transforms():
     return {
         'train': albu.Compose([
             albu.Resize(224, 224),
-            # albu.RandomResizedCrop(224, 224),
             albu.ShiftScaleRotate(shift_limit=0.0, scale_limit=0.15, rotate_limit=15, p=0.5),
             albu.HorizontalFlip(),
             albu.OneOf(
@@ -26,15 +25,11 @@ def get_data_transforms():
                 p=0.5
             ),
             albu.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
-            # albu.Normalize(),
             ToTensor(),
         ]),
         'val': albu.Compose([
             albu.Resize(224, 224),
-            # albu.Resize(256, 256),
-            # albu.CenterCrop(224, 224),
             albu.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
-            # albu.Normalize(),
             ToTensor(),
         ]),
     }
@@ -52,9 +47,6 @@ def get_files_metadata_dfs(root_data_dir, val_fraction, seed):
         random_state=seed,
         stratify=train_val_files_metadata_df[['class_id']]
     )
-    # train_files_metadata_df = train_files_metadata_df.reset_index(drop=True)
-    # val_files_metadata_df = val_files_metadata_df.reset_index(drop=True)
-
     print('Train shape: ', train_files_metadata_df.shape)
     print('Val shape: ', val_files_metadata_df.shape)
     print('Test shape: ', test_files_metadata_df.shape)
